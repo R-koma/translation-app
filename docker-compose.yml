@@ -23,8 +23,8 @@ services:
       - 8080:8080
     env_file:
       - ./backend/.env
-    volumes:
-      - ./backend:/
+    # volumes:
+    #   - ./backend:/
     depends_on:
       - db
     restart: always
