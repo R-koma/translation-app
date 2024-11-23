@@ -8,8 +8,8 @@ services:
       - 3000:3000
     env_file:
       - ./frontend/.env
-    volumes:
-      - ./frontend:/src
+    # volumes:
+    #   - ./frontend:/src
     depends_on:
       - backend
     restart: always
