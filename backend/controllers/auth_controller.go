@@ -11,6 +11,7 @@ import (
 type IAuthController interface {
 	Signup(ctx *gin.Context)
 	Login(ctx *gin.Context)
+	Profile(ctx *gin.Context)
 }
 
 type AuthController struct {
@@ -54,4 +55,16 @@ func (c *AuthController) Login(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"token": token})
+}
+
+func (c *AuthController) Profile(ctx *gin.Context) {
+
+	token := ctx.GetHeader("Authorization")
+	user, err := c.service.GetUserFromToken(token)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"user": user})
 }

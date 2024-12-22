@@ -34,6 +34,7 @@ func main() {
 	authRouter := r.Group("/auth")
 	authRouter.POST("/signup", authController.Signup)
 	authRouter.POST("/login", authController.Login)
+	authRouter.GET("/profile", authController.Profile)
 
 	r.Run("localhost:8080") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
