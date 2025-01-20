@@ -1,21 +1,9 @@
-// package main
-
-// import (
-// 	"github.com/gin-gonic/gin"
-// )
-
-// func main() {
-
-// 	r := gin.Default()
-
-// 	r.Run("localhost:8080") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
-// }
-
 package main
 
 import (
 	"github.com/R-koma/translation-app/backend/controllers"
 	"github.com/R-koma/translation-app/backend/infra"
+	"github.com/R-koma/translation-app/backend/middlewares"
 	"github.com/R-koma/translation-app/backend/repositories"
 	"github.com/R-koma/translation-app/backend/services"
 	"github.com/gin-contrib/cors"
@@ -29,6 +17,10 @@ func main() {
 	authService := services.NewAuthService(authRepository)
 	authController := controllers.NewAuthController(authService)
 
+	friendRequestRepository := repositories.NewFriendRequestRepository(db)
+	friendRequestService := services.NewFriendRequestService(friendRequestRepository)
+	friendRequestController := controllers.NewFriendRequestController(friendRequestService)
+
 	r := gin.Default()
 	r.Use(cors.Default())
 	authRouter := r.Group("/auth")
@@ -36,5 +28,11 @@ func main() {
 	authRouter.POST("/login", authController.Login)
 	authRouter.GET("/profile", authController.Profile)
 
-	r.Run("localhost:8080") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	friendsRouterWithAuth := r.Group("/friend", middlewares.AuthMiddleware(authService))
+
+	friendsRouterWithAuth.POST("/requests", friendRequestController.CreateFriendRequest)
+	friendsRouterWithAuth.GET("/requests", friendRequestController.GetFriendRequests)
+	friendsRouterWithAuth.PATCH("/requests/:id", friendRequestController.UpdateFriendRequestStatus)
+
+	r.Run("localhost:8080")
 }
