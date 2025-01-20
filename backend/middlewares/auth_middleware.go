@@ -26,7 +26,6 @@ func AuthMiddleware(authService services.IAuthService) gin.HandlerFunc {
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
-		// ユーザー情報取得に成功した場合
 		ctx.Set("user", user)
 
 		ctx.Next()

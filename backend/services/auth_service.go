@@ -26,7 +26,6 @@ func NewAuthService(repository repositories.IAuthRepository) IAuthService {
 }
 
 func (s *AuthService) Signup(email string, password string) error {
-	// ハッシュ化
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
@@ -64,7 +63,6 @@ func CreateToken(userId uint, email string) (*string, error) {
 		"exp":   time.Now().Add(time.Hour).Unix(),
 	})
 
-	// 秘密鍵で署名(秘匿性が高いため.envで管理)
 	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
 	if err != nil {
 		return nil, err
@@ -75,7 +73,7 @@ func CreateToken(userId uint, email string) (*string, error) {
 func (s *AuthService) GetUserFromToken(tokenString string) (*models.User, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return []byte(os.Getenv("SECRET_KEY")), nil
 	})

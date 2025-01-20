@@ -10,6 +10,9 @@ func main() {
 	db := infra.SetupDB()
 
 	if err := db.AutoMigrate(&models.User{}); err != nil {
-		panic("Failed to migrate database")
+		panic("Failed to migrate User database")
+	}
+	if err := db.AutoMigrate(&models.FriendRequest{}); err != nil {
+		panic("Failed to migrate FriendRequest database")
 	}
 }
