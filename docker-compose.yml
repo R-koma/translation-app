@@ -1,75 +1,43 @@
-# services:
-#   frontend:
-#     build:
-#       context: ./frontend
-#       dockerfile: Dockerfile
-#     container_name: translation-app-frontend
-#     ports:
-#       - 3000:3000
-#     env_file:
-#       - ./frontend/.env
-#     # volumes:
-#     #   - ./frontend:/src
-#     depends_on:
-#       - backend
-#     restart: always
-
-#   backend:
-#     build:
-#       context: ./backend
-#       dockerfile: Dockerfile
-#     container_name: translation-app-backend
-#     ports:
-#       - 8080:8080
-#     env_file:
-#       - ./backend/.env
-#     # volumes:
-#     #   - ./backend:/
-#     depends_on:
-#       - db
-#     restart: always
-
-#   db:
-#     image: postgres:16
-#     environment:
-#       - POSTGRES_USER
-#       - POSTGRES_PASSWORD
-#       - POSTGRES_DB
-#     volumes:
-#       - postgres_data:/var/lib/postgresql/data/
-#     ports:
-#       - 5432:5432
-
-# volumes:
-#   postgres_data:
-
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: postgres
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - 5432:5432
-    volumes:
-      - ./backend/docker/postgres/init.d:/docker-entrypoint-initdb.d
-      - ./backend/docker/postgres/pgdata:/var/lib/postgresql/data
+      - "5173:5173"
     environment:
-      POSTGRES_USER: translationuser
-      POSTGRES_PASSWORD: translationpassword
-      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
-      POSTGRES_DB: translation
-    hostname: postgres
-    restart: always
-    user: root
-
-  pgadmin:
-    image: dpage/pgadmin4
-    restart: always
-    ports:
-      - 81:80
-    environment:
-      PGADMIN_DEFAULT_EMAIL: translation@example.com
-      PGADMIN_DEFAULT_PASSWORD: translationpassword
-    volumes:
-      - ./backend/docker/pgadmin:/var/lib/pgadmin
+      - VITE_API_URL=http://backend:8080
     depends_on:
-      - postgres
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ENV=prod
+      - DB_HOST=db
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=mydb
+      - DB_PORT=5432
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:

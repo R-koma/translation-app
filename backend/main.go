@@ -4,6 +4,7 @@ import (
 	"github.com/R-koma/translation-app/backend/controllers"
 	"github.com/R-koma/translation-app/backend/infra"
 	"github.com/R-koma/translation-app/backend/middlewares"
+	"github.com/R-koma/translation-app/backend/models"
 	"github.com/R-koma/translation-app/backend/repositories"
 	"github.com/R-koma/translation-app/backend/services"
 	"github.com/gin-contrib/cors"
@@ -13,6 +14,8 @@ import (
 func main() {
 	infra.Initialize()
 	db := infra.SetupDB()
+	db.AutoMigrate(&models.User{}, &models.FriendRequest{})
+
 	authRepository := repositories.NewAuthRepository(db)
 	authService := services.NewAuthService(authRepository)
 	authController := controllers.NewAuthController(authService)
@@ -34,5 +37,5 @@ func main() {
 	friendsRouterWithAuth.GET("/requests", friendRequestController.GetFriendRequests)
 	friendsRouterWithAuth.PATCH("/requests/:id", friendRequestController.UpdateFriendRequestStatus)
 
-	r.Run("localhost:8080")
+	r.Run("0.0.0.0:8080")
 }

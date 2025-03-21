@@ -1,15 +1,14 @@
-FROM golang:1.22-alpine
+FROM golang:1.22 AS builder
 
 WORKDIR /app
 
-# ENV GO111MODULE=on
-
-# COPY go.mod go.sum ./
-# RUN go mod download
-
 COPY . .
-RUN go build -o  main
 
-EXPOSE 8080
+RUN go mod download
+RUN go build -o main .
 
-CMD [ "./main" ]
+FROM gcr.io/distroless/base
+
+COPY --from=builder /app/main .
+
+CMD ["/main"]
