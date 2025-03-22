@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
@@ -27,8 +28,19 @@ func SetupDB() *gorm.DB {
 	)
 
 	if env == "prod" {
-		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-		log.Println("Setup postgresql database")
+		maxRetries := 10
+		retryInterval := 5 * time.Second
+
+		for i := range make([]struct{}, maxRetries) {
+			db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+			if err == nil {
+				log.Println("Connected to PostgresSQL database")
+				break
+			}
+			log.Printf("Failed to connect database (attempt %d/%d): %v\n", i+1, maxRetries, err)
+			time.Sleep(retryInterval)
+		}
+		log.Println("Setup PostgresSQL database")
 	} else {
 		db, err = gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 		log.Println("Setup sqlite database")
