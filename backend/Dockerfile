@@ -1,14 +1,18 @@
-FROM golang:1.22 AS builder
+FROM golang:1.24 AS builder
 
 WORKDIR /app
 
-COPY . .
+COPY go.mod go.sum ./
 
 RUN go mod download
-RUN go build -o main .
+RUN go mod tidy
 
-FROM gcr.io/distroless/base
+COPY . .
 
-COPY --from=builder /app/main .
+RUN go install github.com/air-verse/air@latest
 
-CMD ["/main"]
+COPY .air.toml ./
+
+EXPOSE 8080
+
+CMD ["air"]

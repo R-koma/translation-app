@@ -37,5 +37,9 @@ func main() {
 	friendsRouterWithAuth.GET("/requests", friendRequestController.GetFriendRequests)
 	friendsRouterWithAuth.PATCH("/requests/:id", friendRequestController.UpdateFriendRequestStatus)
 
+	r.GET("/", func(c *gin.Context) {
+		c.String(200, "Hello, World! This is a backend server!")
+	})
+
 	r.Run("0.0.0.0:8080")
 }

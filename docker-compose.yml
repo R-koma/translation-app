@@ -7,6 +7,9 @@ services:
       - "5173:5173"
     environment:
       - VITE_API_URL=http://backend:8080
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     depends_on:
       - backend
 
@@ -25,12 +28,14 @@ services:
       - DB_PORT=${DB_PORT}
       - DATABASE_URL=${DATABASE_URL}
       - SECRET_KEY=${SECRET_KEY}
+    volumes:
+      - ./backend:/app
     depends_on:
       db:
         condition: service_healthy
 
   db:
-    image: postgres:16
+    image: postgres:17
     ports:
       - "5432:5432"
     environment:
