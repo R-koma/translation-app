@@ -1,15 +1,18 @@
-FROM golang:1.22-alpine
+FROM golang:1.24 AS builder
 
 WORKDIR /app
 
-# ENV GO111MODULE=on
+COPY go.mod go.sum ./
 
-# COPY go.mod go.sum ./
-# RUN go mod download
+RUN go mod download
+RUN go mod tidy
 
 COPY . .
-RUN go build -o  main
+
+RUN go install github.com/air-verse/air@latest
+
+COPY .air.toml ./
 
 EXPOSE 8080
 
-CMD [ "./main" ]
+CMD ["air"]
