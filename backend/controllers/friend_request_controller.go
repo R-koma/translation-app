@@ -36,7 +36,7 @@ func (c *friendRequestController) CreateFriendRequest(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-	user, ok := userVal.(models.User)
+	user, ok := userVal.(*models.User)
 	if !ok {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
@@ -56,7 +56,7 @@ func (c *friendRequestController) GetFriendRequests(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-	user, ok := userVal.(models.User)
+	user, ok := userVal.(*models.User)
 	if !ok {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return

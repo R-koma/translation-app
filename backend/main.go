@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/R-koma/translation-app/backend/controllers"
-	"github.com/R-koma/translation-app/backend/infra"
+	"github.com/R-koma/translation-app/backend/db"
 	"github.com/R-koma/translation-app/backend/middlewares"
 	"github.com/R-koma/translation-app/backend/models"
 	"github.com/R-koma/translation-app/backend/repositories"
@@ -12,8 +12,7 @@ import (
 )
 
 func main() {
-	infra.Initialize()
-	db := infra.SetupDB()
+	db := db.SetupDB()
 	db.AutoMigrate(&models.User{}, &models.FriendRequest{})
 
 	authRepository := repositories.NewAuthRepository(db)
