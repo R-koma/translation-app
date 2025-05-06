@@ -10,6 +10,7 @@ import (
 type IAuthRepository interface {
 	CreateUser(user models.User) error
 	FindUser(email string) (*models.User, error)
+	FindAllUsers() ([]models.User, error)
 }
 
 type AuthRepository struct {
@@ -38,4 +39,13 @@ func (r *AuthRepository) FindUser(email string) (*models.User, error) {
 		return nil, result.Error
 	}
 	return &user, nil
+}
+
+func (r *AuthRepository) FindAllUsers() ([]models.User, error) {
+	var users []models.User
+	result := r.db.Find(&users)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return users, nil
 }

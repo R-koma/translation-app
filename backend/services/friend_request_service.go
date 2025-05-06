@@ -9,6 +9,7 @@ type IFriendRequestService interface {
 	CreateFriendRequest(senderID uint, receiverID uint) error
 	GetFriendRequestsByReceiverID(receiverID uint) ([]models.FriendRequest, error)
 	UpdateFriendRequestStatus(id uint, status string) error
+	GetMyFriends(userID uint) ([]models.User, error)
 }
 
 type friendRequestService struct {
@@ -37,4 +38,8 @@ func (s *friendRequestService) UpdateFriendRequestStatus(id uint, status string)
 		return nil
 	}
 	return s.repository.UpdateStatus(id, status)
+}
+
+func (s *friendRequestService) GetMyFriends(userID uint) ([]models.User, error) {
+	return s.repository.FindAcceptedFriendUsers(userID)
 }
