@@ -101,5 +101,9 @@ func (s *AuthService) GetAllUsers() ([]models.User, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Filter out sensitive information like passwords
+	for i := range users {
+		users[i].Password = ""
+	}
 	return users, nil
 }
