@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// main initializes the database, sets up repositories, services, and controllers, configures HTTP routes and middleware, and starts the backend server for the translation app.
 func main() {
 	db := db.SetupDB()
 	db.AutoMigrate(&models.User{}, &models.FriendRequest{})
