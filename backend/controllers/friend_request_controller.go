@@ -14,6 +14,7 @@ type IFriendRequestController interface {
 	CreateFriendRequest(ctx *gin.Context)
 	GetFriendRequests(ctx *gin.Context)
 	UpdateFriendRequestStatus(ctx *gin.Context)
+	GetMyFriends(ctx *gin.Context)
 }
 
 type friendRequestController struct {
@@ -89,4 +90,24 @@ func (c *friendRequestController) UpdateFriendRequestStatus(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "friend request updated"})
+}
+
+func (c *friendRequestController) GetMyFriends(ctx *gin.Context) {
+	userVal, exists := ctx.Get("user")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	user, ok := userVal.(*models.User)
+	if !ok {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	friends, err := c.service.GetMyFriends(user.ID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	friendDtos := dto.ToUserResponseDtoList(friends)
+	ctx.JSON(http.StatusOK, gin.H{"friends": friendDtos})
 }

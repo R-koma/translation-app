@@ -12,6 +12,7 @@ type IAuthController interface {
 	Signup(ctx *gin.Context)
 	Login(ctx *gin.Context)
 	Profile(ctx *gin.Context)
+	GetAllUsers(ctx *gin.Context)
 }
 
 type AuthController struct {
@@ -67,4 +68,14 @@ func (c *AuthController) Profile(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"user": user})
+}
+
+func (c *AuthController) GetAllUsers(ctx *gin.Context) {
+	users, err := c.service.GetAllUsers()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	usersDtos := dto.ToUserResponseDtoList(users)
+	ctx.JSON(http.StatusOK, gin.H{"users": usersDtos})
 }

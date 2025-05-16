@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// main initializes the database, sets up repositories, services, and controllers, configures HTTP routes and middleware, and starts the backend server for the translation app.
 func main() {
 	db := db.SetupDB()
 	db.AutoMigrate(&models.User{}, &models.FriendRequest{})
@@ -29,12 +30,14 @@ func main() {
 	authRouter.POST("/signup", authController.Signup)
 	authRouter.POST("/login", authController.Login)
 	authRouter.GET("/profile", authController.Profile)
+	authRouter.GET("/users", authController.GetAllUsers)
 
 	friendsRouterWithAuth := r.Group("/friend", middlewares.AuthMiddleware(authService))
 
 	friendsRouterWithAuth.POST("/requests", friendRequestController.CreateFriendRequest)
 	friendsRouterWithAuth.GET("/requests", friendRequestController.GetFriendRequests)
 	friendsRouterWithAuth.PATCH("/requests/:id", friendRequestController.UpdateFriendRequestStatus)
+	friendsRouterWithAuth.GET("/friends", friendRequestController.GetMyFriends)
 
 	r.GET("/", func(c *gin.Context) {
 		c.String(200, "Hello, World! This is a backend server!")

@@ -15,6 +15,7 @@ type IAuthService interface {
 	Signup(email string, password string) error
 	Login(email string, password string) (*string, error)
 	GetUserFromToken(tokenString string) (*models.User, error)
+	GetAllUsers() ([]models.User, error)
 }
 
 type AuthService struct {
@@ -93,4 +94,16 @@ func (s *AuthService) GetUserFromToken(tokenString string) (*models.User, error)
 		}
 	}
 	return user, nil
+}
+
+func (s *AuthService) GetAllUsers() ([]models.User, error) {
+	users, err := s.repository.FindAllUsers()
+	if err != nil {
+		return nil, err
+	}
+	// Filter out sensitive information like passwords
+	for i := range users {
+		users[i].Password = ""
+	}
+	return users, nil
 }
